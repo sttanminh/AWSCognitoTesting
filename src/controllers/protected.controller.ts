@@ -15,10 +15,11 @@ class ProtectedController {
 
   public initRoutes() {
     this.router.use(this.authMiddleware.verifyToken)
-    this.router.get('/secret', this.secret)
+    this.router.post('/secret', this.secret)
   }
 
   secret = (req: Request, res: Response) => {
+    console.log(res)
     res.send("you can view secret")
   }
 }
