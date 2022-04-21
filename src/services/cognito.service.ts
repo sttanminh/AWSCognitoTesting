@@ -83,6 +83,23 @@ export default class Cognito {
     try {
       const cognitoResp = await this.cognitoIdentity.confirmSignUp(params).promise();
       console.log(cognitoResp)
+
+      return true
+    } catch (error) {
+      console.log("error", error)
+      return false
+    }
+  }
+
+
+  public async getUser(code: string): Promise<boolean> {
+    var params = {
+      AccessToken: code,
+    };
+    console.log("Trying")
+    try {
+      const cognitoResp = await this.cognitoIdentity.getUser(params).promise();
+      console.log(cognitoResp)
       return true
     } catch (error) {
       console.log("error", error)

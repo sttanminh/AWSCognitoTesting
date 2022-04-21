@@ -17,7 +17,8 @@ class AuthController {
         this.router.post('/verify', this.validateBody('verify'), this.verify)
         this.router.post('/forgot-password', this.validateBody('forgotPassword'), this.forgotPassword)
         this.router.post('/confirm-password', this.validateBody('confirmPassword'), this.confirmPassword)
-    }
+        this.router.post('/getUser', this.validateBody('getUser'), this.getUser)
+      }
 
 
     // Signup new user
@@ -57,6 +58,26 @@ class AuthController {
       let cognitoService = new Cognito();
       cognitoService.signInUser(username, password)
         .then(success => {
+          console.log(res.getHeader("AccessToken"))
+          success ? res.status(200).end() : res.status(400).end()
+        })
+    }
+
+
+
+    getUser = (req: Request, res: Response) => {
+      const result = validationResult(req);
+      if (!result.isEmpty()) {
+        return res.status(422).json({ errors: result.array() });
+      }
+      console.log(req.body);
+
+
+      const { AccessToken } = req.body;
+      let cognitoService = new Cognito();
+      cognitoService.getUser(AccessToken)
+        .then(success => {
+          // console.log(res)
           success ? res.status(200).end() : res.status(400).end()
         })
     }
@@ -128,6 +149,10 @@ class AuthController {
             body('username').notEmpty().isLength({min: 5}),
             body('code').notEmpty().isString().isLength({min: 6, max: 6})
           ]
+          case 'getUser':
+            return [
+              body('AccessToken').notEmpty().isString()
+            ] 
         case 'forgotPassword':
           return [
             body('username').notEmpty().isLength({ min: 5}),
